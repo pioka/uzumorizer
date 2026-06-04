@@ -1,0 +1,14 @@
+{
+  "name": "io.github.pioka.uzumorizer.editor",
+  "rootNamespace": "Pioka.Uzumorizer",
+  "references": [],
+  "includePlatforms": ["Editor"],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

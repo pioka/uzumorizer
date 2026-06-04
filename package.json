@@ -1,0 +1,12 @@
+{
+  "name": "io.github.pioka.uzumorizer",
+  "version": "0.1.0-dev",
+  "displayName": "Uzumorizer",
+  "description": "Convert from lilToon to UzumoreShader with NDMF.",
+  "unity": "2022.3",
+  "author": {
+    "name": "pioka",
+    "url": "https://github.com/pioka"
+  },
+  "license": "MIT"
+}
