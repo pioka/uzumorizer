@@ -1,13 +1,15 @@
 {
-  "name": "io.github.pioka.uzumorizer.editor",
-  "rootNamespace": "Pioka.Uzumorizer",
-  "references": [],
-  "includePlatforms": ["Editor"],
+  "name": "io.github.pioka.uzumorizer.Runtime",
+  "rootNamespace": "io.github.pioka.uzumorizer",
+  "references": [
+    "VRC.SDKBase"
+  ],
+  "includePlatforms": [],
   "excludePlatforms": [],
   "allowUnsafeCode": false,
   "overrideReferences": false,
   "precompiledReferences": [],
-  "autoReferenced": false,
+  "autoReferenced": true,
   "defineConstraints": [],
   "versionDefines": [],
   "noEngineReferences": false
