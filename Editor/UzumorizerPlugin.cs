@@ -35,8 +35,7 @@ namespace io.github.pioka.uzumorizer.Editor
             InPhase(BuildPhase.Optimizing)
                 .AfterPlugin("net.rs64.tex-trans-tool")        // TexTransTool (AtlasTexture)
                 .AfterPlugin("com.anatawa12.avatar-optimizer") // AAO: Avatar Optimizer
-                .Run("Convert lilToon to UzumoreShader",
-                    ctx => UzumoreConversionPass.Convert(ctx, new ConvertAllStrategy()));
+                .Run("Convert lilToon to UzumoreShader", UzumoreConversionPass.Convert);
         }
     }
 }

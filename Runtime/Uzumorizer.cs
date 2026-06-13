@@ -26,7 +26,7 @@ namespace io.github.pioka.uzumorizer
         //
         // 将来の拡張ポイント:
         //   対象/除外の指定 (Renderer 単位・Material 単位) を追加する場合は、
-        //   ここにフィールドを足し、Editor 側の IMaterialConversionStrategy を
-        //   差し替える。NDMF パスの骨格は変更不要。
+        //   ここにフィールドを足し、Editor 側の変換パス (UzumoreConversionPass) に
+        //   判定を渡す。NDMF パスの骨格は変更不要。
     }
 }

@@ -61,7 +61,7 @@ namespace io.github.pioka.uzumorizer.Editor
         /// <summary>
         /// [Optimizing / TTT・AAO より後] 記録済みフラグを見て lilToon マテリアルを変換する。
         /// </summary>
-        public static void Convert(BuildContext ctx, IMaterialConversionStrategy strategy)
+        public static void Convert(BuildContext ctx)
         {
             if (!ctx.GetState<UzumorizerState>().Enabled) return;
 
@@ -80,7 +80,6 @@ namespace io.github.pioka.uzumorizer.Editor
                 {
                     var src = mats[i];
                     if (src == null) continue;
-                    if (!strategy.ShouldConvert(renderer, i, src)) continue;
 
                     // 一次フィルタ: lilToon 系でなければ複製すらしない。
                     if (!lilToon.lilMaterialUtils.CheckShaderIslilToon(src)) continue;
