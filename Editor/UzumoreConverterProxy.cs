@@ -1,4 +1,3 @@
-#if UZUMORIZER_HAS_UZUMORE
 using UnityEngine;
 
 namespace io.github.pioka.uzumorizer.Editor
@@ -31,4 +30,3 @@ namespace io.github.pioka.uzumorizer.Editor
         }
     }
 }
-#endif

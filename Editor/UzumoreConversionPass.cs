@@ -65,7 +65,6 @@ namespace io.github.pioka.uzumorizer.Editor
         {
             if (!ctx.GetState<UzumorizerState>().Enabled) return;
 
-#if UZUMORIZER_HAS_UZUMORE
             var root = ctx.AvatarRootObject;
             var proxy = new UzumoreConverterProxy();
 
@@ -104,14 +103,8 @@ namespace io.github.pioka.uzumorizer.Editor
 
                 if (slotChanged) renderer.sharedMaterials = mats;
             }
-#else
-            Debug.LogWarning(
-                "[Uzumorizer] うずもれシェーダー (jp.sigmal00.uzumore-shader) が見つからないため、" +
-                "変換をスキップしました。VCC からうずもれシェーダーを導入してください。");
-#endif
         }
 
-#if UZUMORIZER_HAS_UZUMORE
         /// <summary>
         /// 1 マテリアルを複製して変換を試みる。
         /// 変換された（shader が変化した）場合は複製を一時アセット化して返す。
@@ -133,6 +126,5 @@ namespace io.github.pioka.uzumorizer.Editor
             ctx.AssetSaver.SaveAsset(dst);
             return dst;
         }
-#endif
     }
 }

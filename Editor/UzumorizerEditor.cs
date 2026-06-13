@@ -19,13 +19,6 @@ namespace io.github.pioka.uzumorizer.Editor
                 "・変換は TexTransTool / AvatarOptimizer の後に実行されます。\n" +
                 "・元のマテリアルやアバターは変更されません。",
                 MessageType.Info);
-
-#if !UZUMORIZER_HAS_UZUMORE
-            EditorGUILayout.HelpBox(
-                "うずもれシェーダー (jp.sigmal00.uzumore-shader) が見つかりません。\n" +
-                "VCC から導入してください。導入されるまで変換は行われません。",
-                MessageType.Warning);
-#endif
         }
     }
 }

@@ -16,12 +16,6 @@
   "precompiledReferences": [],
   "autoReferenced": false,
   "defineConstraints": [],
-  "versionDefines": [
-    {
-      "name": "jp.sigmal00.uzumore-shader",
-      "expression": "",
-      "define": "UZUMORIZER_HAS_UZUMORE"
-    }
-  ],
+  "versionDefines": [],
   "noEngineReferences": false
 }
