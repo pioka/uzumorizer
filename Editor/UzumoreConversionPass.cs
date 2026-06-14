@@ -27,10 +27,13 @@ namespace io.github.pioka.uzumorizer.Editor
     ///   2. Convert        : TTT/AAO より後(Optimizing)で実行。記録済みフラグを見て変換する。
     ///
     /// 非破壊性の担保:
-    ///   - 元マテリアル（共有アセット）には一切触れない。
+    ///   - 元マテリアル（プロジェクトの共有アセット）には一切触れない。
     ///   - 変換対象は new Material(src) で複製し、複製のみを書き換える。
+    ///   - 複製した置換マテリアルは ObjectRegistry に登録し、後段プラグイン/エラーレポートが追跡できるようにする。
     ///   - 同一マテリアル参照は 1 回だけ複製してキャッシュ共有（マテリアル数を増やさない）。
     ///   - 実際に変換されなかったマテリアルは複製を残さない。
+    ///   - ビルド中に生成された一時マテリアル（IsTemporaryAsset）は共有アセットではないため、
+    ///     複製せず in-place で変換する（無駄な複製を避ける）。
     /// </summary>
     internal static class UzumoreConversionPass
     {
@@ -111,6 +114,16 @@ namespace io.github.pioka.uzumorizer.Editor
         /// </summary>
         private static Material ConvertOne(BuildContext ctx, UzumoreConverterProxy proxy, Material src)
         {
+            // src がこのビルド中に生成された一時マテリアルなら、複製せず in-place で変換してよい。
+            // 元の共有/プロジェクトアセットではないため、書き換えても非破壊性を損なわない。
+            // （ベストプラクティス: 一時アセットの無駄な複製を避ける）
+            if (ctx.IsTemporaryAsset(src))
+            {
+                proxy.Convert(src);
+                // 同一参照を返す → スロット差し替えも置換登録も不要。
+                return src;
+            }
+
             var dst = new Material(src);
             proxy.Convert(dst);
 
@@ -123,6 +136,11 @@ namespace io.github.pioka.uzumorizer.Editor
 
             dst.name = src.name + " (Uzumore)";
             ctx.AssetSaver.SaveAsset(dst);
+
+            // src → dst の置換関係を登録し、後段プラグインやエラーレポートが追跡できるようにする。
+            // （ベストプラクティス: 複製で置き換えた対応関係を ObjectRegistry に登録する）
+            ObjectRegistry.RegisterReplacedObject(src, dst);
+
             return dst;
         }
     }
