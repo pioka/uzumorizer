@@ -97,12 +97,21 @@ namespace io.github.pioka.uzumorizer.Editor
             // 一時アセットの場合、複製せず in-place でConvert()を呼び出して変換する。(NDMFベストプラクティス準拠)
             if (ctx.IsTemporaryAsset(src))
             {
+                // MaterialVariant のままだと shader を親から継承し差し替えが効かないため、先にフラット化する。
+                FlattenVariant(src);
                 proxy.Convert(src);
                 return src;
             }
 
             // 共有アセットは複製し、複製したものをConvert()で変換する。
             var dst = new Material(src);
+
+            // new Material(src) は src の親リンク(parent)も引き継ぐため、複製も MaterialVariant のままになる。
+            // Variant は shader を親から継承するため Convert() のシェーダー差し替えが効かず、
+            // 後段の dst.shader == src.shader 判定で「未変換」と見なされ複製が破棄されてしまう。
+            // これを防ぐため、変換前に親リンクを切ってフラット化する（解決済みのプロパティ値は保持される）。
+            FlattenVariant(dst);
+
             proxy.Convert(dst);
 
             // 変換前後でシェーダーが同一(何も変換されなかった)場合、変換処理用の複製を破棄し、変換前のマテリアルをそのまま返す
@@ -119,6 +128,16 @@ namespace io.github.pioka.uzumorizer.Editor
             ObjectRegistry.RegisterReplacedObject(src, dst);
 
             return dst;
+        }
+
+        /// <summary>
+        /// MaterialVariant（parent を持つマテリアル）をフラット化して通常マテリアルに戻す。
+        /// parent に null を代入すると解決済みのプロパティ値を保持したまま継承関係が解除される。
+        /// 通常マテリアル（parent が null）に対しては何もしない。
+        /// </summary>
+        private static void FlattenVariant(Material material)
+        {
+            if (material.parent != null) material.parent = null;
         }
     }
 }
