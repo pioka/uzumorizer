@@ -14,7 +14,7 @@ namespace io.github.pioka.uzumorizer.Editor
                 "このアバターをビルドすると、内部の lilToon マテリアルを\n" +
                 "うずもれシェーダー (Sigmal00/Uzumore) へ非破壊変換します。\n\n" +
                 "・パラメータはうずもれシェーダーの既定値が適用されます。\n" +
-                "・変換は TexTransTool / AvatarOptimizer の後に実行されます。\n" +
+                "・変換は AvatarOptimizer の前に実行されます。\n" +
                 "・元のマテリアルやアバターは変更されません。",
                 MessageType.Info);
         }
