@@ -4,13 +4,11 @@ using UnityEngine;
 
 namespace io.github.pioka.uzumorizer.Editor
 {
-    /// <summary>
     /// ビルド全体で共有する状態。マーカー検出パス(CollectMarkers)から
     /// 変換パス(Convert)へ「このアバターを変換するか」を引き渡すために使う。
     ///
     /// マーカーコンポーネントは AAO より前に削除する（AAO の未知コンポーネント警告を避ける）ため、
     /// 変換パスの時点ではコンポーネントが存在しない。そのため、ここに判定結果を退避しておく。
-    /// </summary>
     internal sealed class UzumorizerState
     {
         public bool Enabled;
@@ -37,35 +35,26 @@ namespace io.github.pioka.uzumorizer.Editor
     /// </summary>
     internal static class UzumoreConversionPass
     {
-        /// <summary>うずもれシェーダーの名前に含まれる識別子（既変換マテリアルの除外に使用）。</summary>
+        /// うずもれシェーダーの名前に含まれる識別子（既変換マテリアルの除外に使用）。
         private const string UzumoreShaderToken = "Sigmal00/Uzumore";
 
-        /// <summary>
-        /// [Transforming / AAO より前] マーカーを検出して状態へ記録し、コンポーネントを削除する。
-        ///
-        /// 実行時に動作しないマーカーのため、AAO が処理する前に削除しておくのが
-        /// AAO 公式が推奨する最善の互換方法。
-        /// （参照: AAO「コンポーネントにAvatar Optimizerとの互換性をもたせる」/ コンポーネントを削除する）
-        /// </summary>
+        // BuildPhase.Transforming: コンポーネントの検出,グローバルでの変換ON/OFFの判定,不要コンポーネントの除去
         public static void CollectMarkers(BuildContext ctx)
         {
+            // アバターに含まれるUzumorizerコンポーネントを取得
             var markers = ctx.AvatarRootObject.GetComponentsInChildren<Uzumorizer>(true);
 
+            // 1つでもあればEnabledとしてBuildContextのStateをセット
             ctx.GetState<UzumorizerState>().Enabled = markers.Length > 0;
 
-            // 将来: ここで markers の設定値を UzumorizerState にスナップショットする。
-
-            foreach (var marker in markers)
-            {
-                if (marker != null) Object.DestroyImmediate(marker);
-            }
+            // 不要になったUzumorizerコンポーネントを除去
+            foreach (var marker in markers) Object.DestroyImmediate(marker);
         }
 
-        /// <summary>
-        /// [Optimizing / TTT・AAO より後] 記録済みフラグを見て lilToon マテリアルを変換する。
-        /// </summary>
+        /// BuildPhase.Optimizing[TTT・AAO より後] 記録済みフラグを見て lilToon マテリアルを変換する。
         public static void Convert(BuildContext ctx)
         {
+            // Transforming時にUzumorizerコンポーネントを検出していなければ何もしない
             if (!ctx.GetState<UzumorizerState>().Enabled) return;
 
             var root = ctx.AvatarRootObject;
@@ -76,7 +65,10 @@ namespace io.github.pioka.uzumorizer.Editor
 
             foreach (var renderer in root.GetComponentsInChildren<Renderer>(true))
             {
+                // 各メッシュレンダラーの持つマテリアル配列
                 var mats = renderer.sharedMaterials;
+
+                // マテリアル配列が変更されたかどうか
                 var slotChanged = false;
 
                 for (var i = 0; i < mats.Length; i++)
@@ -84,18 +76,20 @@ namespace io.github.pioka.uzumorizer.Editor
                     var src = mats[i];
                     if (src == null) continue;
 
-                    // 一次フィルタ: lilToon 系でなければ複製すらしない。
+                    // lilToon 系でなければスキップ。
                     if (!lilToon.lilMaterialUtils.CheckShaderIslilToon(src)) continue;
 
-                    // 既にうずもれシェーダーなら除外（無駄な複製を避ける）。
+                    // 既にうずもれシェーダーならスキップ。
                     if (src.shader != null && src.shader.name.Contains(UzumoreShaderToken)) continue;
 
+                    // キャッシュから変換先を解決できない場合、変換先を生成してキャッシュを更新
                     if (!cache.TryGetValue(src, out var dst))
                     {
                         dst = ConvertOne(ctx, proxy, src);
                         cache[src] = dst;
                     }
 
+                    // 変換先の反映
                     if (!ReferenceEquals(dst, src))
                     {
                         mats[i] = dst;
@@ -114,31 +108,22 @@ namespace io.github.pioka.uzumorizer.Editor
         /// </summary>
         private static Material ConvertOne(BuildContext ctx, UzumoreConverterProxy proxy, Material src)
         {
-            // src がこのビルド中に生成された一時マテリアルなら、複製せず in-place で変換してよい。
-            // 元の共有/プロジェクトアセットではないため、書き換えても非破壊性を損なわない。
-            // （ベストプラクティス: 一時アセットの無駄な複製を避ける）
-            if (ctx.IsTemporaryAsset(src))
-            {
-                proxy.Convert(src);
-                // 同一参照を返す → スロット差し替えも置換登録も不要。
-                return src;
-            }
-
+            // 変換前マテリアルを複製し、うずもれシェーダーの変換に渡す
             var dst = new Material(src);
             proxy.Convert(dst);
 
+            // 変換前後でシェーダーが同一(何も変換されなかった)場合、変換処理用の複製を破棄し、変換前のマテリアルをそのまま返す
             if (dst.shader == src.shader)
             {
-                // 標準 lilToon のどの派生にも一致しなかった（= 変換対象外）。複製は残さない。
                 Object.DestroyImmediate(dst);
                 return src;
             }
 
+            // 変換後マテリアルのリネームと保存
             dst.name = src.name + " (Uzumore)";
             ctx.AssetSaver.SaveAsset(dst);
 
-            // src → dst の置換関係を登録し、後段プラグインやエラーレポートが追跡できるようにする。
-            // （ベストプラクティス: 複製で置き換えた対応関係を ObjectRegistry に登録する）
+            // (NDMFベストプラクティス準拠)　src → dst の置換関係を登録し、後段プラグインやエラーレポートが追跡できるようにする。
             ObjectRegistry.RegisterReplacedObject(src, dst);
 
             return dst;

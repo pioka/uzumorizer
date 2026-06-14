@@ -3,10 +3,8 @@ using UnityEngine;
 
 namespace io.github.pioka.uzumorizer.Editor
 {
-    /// <summary>
     /// Uzumorizer コンポーネント用の最小インスペクタ。
     /// 設定項目は無いため、何をするコンポーネントかの説明のみ表示する。
-    /// </summary>
     [CustomEditor(typeof(Uzumorizer))]
     internal sealed class UzumorizerEditor : UnityEditor.Editor
     {

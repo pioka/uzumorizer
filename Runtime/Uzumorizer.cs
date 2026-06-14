@@ -3,20 +3,8 @@ using VRC.SDKBase;
 
 namespace io.github.pioka.uzumorizer
 {
-    /// <summary>
     /// アバターのルートに付与するマーカーコンポーネント。
-    ///
-    /// このコンポーネントが付いたアバターをビルドすると、Uzumorizer の NDMF パスが
-    /// アバター内の lilToon マテリアルを うずもれシェーダー (Sigmal00/Uzumore) へ
-    /// 非破壊変換します。
-    ///
-    /// 初版 (v0.1.0) は「存在するだけでアバター全体の lilToon マテリアルを一律変換」する
-    /// 仕様で、設定項目はありません。うずもれシェーダー側のパラメータは
-    /// シェーダーの既定値がそのまま適用されます。
-    ///
-    /// <see cref="IEditorOnly"/> を実装しているため、ビルド成果物には残りません
-    /// (VRChat SDK によって除去されます)。
-    /// </summary>
+    /// 変換するかの判定はアバター内にこのコンポーネントが存在するかで判定するので、厳密にはルートに置かなくてもいい
     [AddComponentMenu("Uzumorizer/Uzumorizer")]
     [DisallowMultipleComponent]
     [HelpURL("https://github.com/pioka/uzumorizer")]

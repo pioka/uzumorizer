@@ -5,21 +5,20 @@ using nadena.dev.ndmf;
 
 namespace io.github.pioka.uzumorizer.Editor
 {
-    /// <summary>
     /// Uzumorizer の NDMF プラグイン。
     ///
     /// AAO 互換性のため 2 パス構成にしている:
     ///
-    ///   (1) Transforming フェーズ（= Optimizing より必ず前）でマーカーを検出・記録し、
-    ///       コンポーネントを削除する。AAO が処理する時点でマーカーが存在しないため、
-    ///       AAO の「未知コンポーネント」警告が発生しない（AAO 公式が最善とする方法）。
+    ///   (UzumoreConversionPass.CollectMarkers)
+    ///   Transforming フェーズ（= Optimizing より必ず前）でマーカーを検出・記録し、
+    ///   コンポーネントを削除する。
     ///
-    ///   (2) Optimizing フェーズの、TexTransTool と AvatarOptimizer の「後」で変換を実行する。
+    ///   (UzumoreConversionPass.Convert)
+    ///   Optimizing フェーズの、TexTransTool と AvatarOptimizer の「後」で変換を実行する。
     ///       - TTT / AAO は lilToon のシェーダー名を見てアトラス化・テクスチャ最適化を行うため、
     ///         先に Sigmal00/Uzumore へ変換すると未知シェーダー扱いになり最適化が劣化/スキップされる。
+    ///       - また、AAOによる最適化が終わったあとの方がマテリアル変換の呼び出しを少なくできる。
     ///       - よって両者の処理が終わってから、純粋なシェーダー差し替えとして最後に変換する。
-    ///       - AfterPlugin は対象プラグイン未導入時は無視されるため、任意の組み合わせで安全。
-    /// </summary>
     internal sealed class UzumorizerPlugin : Plugin<UzumorizerPlugin>
     {
         public override string QualifiedName => "io.github.pioka.uzumorizer";
