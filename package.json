@@ -1,12 +1,17 @@
 {
   "name": "io.github.pioka.uzumorizer",
-  "version": "0.1.0-dev",
   "displayName": "Uzumorizer",
-  "description": "Convert from lilToon to UzumoreShader with NDMF.",
+  "version": "0.1.0",
+  "description": "ビルド時に、アバター内の lilToon マテリアルを うずもれシェーダー (Sigmal00/Uzumore) へ NDMF 上で非破壊変換するツールです。パラメータはうずもれシェーダーの既定値をそのまま適用します。",
   "unity": "2022.3",
   "author": {
     "name": "pioka",
     "url": "https://github.com/pioka"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "vpmDependencies": {
+    "nadena.dev.ndmf": ">=1.6.0",
+    "jp.lilxyzw.liltoon": ">=2.0.0",
+    "jp.sigmal00.uzumore-shader": ">=1.0.16"
+  }
 }
