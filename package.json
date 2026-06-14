@@ -1,7 +1,7 @@
 {
   "name": "io.github.pioka.uzumorizer",
   "displayName": "Uzumorizer",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "ビルド時に、アバター内の lilToon マテリアルを うずもれシェーダー (Sigmal00/Uzumore) へ NDMF 上で非破壊変換するツールです。パラメータはうずもれシェーダーの既定値をそのまま適用します。",
   "unity": "2022.3",
   "author": {
