@@ -19,6 +19,7 @@ namespace io.github.pioka.uzumorizer.Editor
         protected override void Configure()
         {
             InPhase(BuildPhase.Optimizing)
+                .AfterPlugin("net.rs64.tex-trans-tool")         // TTTのliltoon用TexEnvの検知に支障が出るため、TTTより後
                 .BeforePlugin("com.anatawa12.avatar-optimizer") // AAO: Avatar Optimizer
                 .Run("Convert lilToon to UzumoreShader", UzumoreConversionPass.Execute);
         }
